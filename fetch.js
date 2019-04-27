@@ -16,15 +16,15 @@ const util = require('util')
 //   .then(response => console.log(response))
 //   .catch(e => console.error("TODO handle error " + e));
 
-let y = fetch("http://localhost:8001/doc/1/term/note+project", {
-  method: "GET",
-}).then(response => response.json())
-  .then(response => response)
-  .catch(e => console.error("TODO handle error " + e));
+// let y = fetch("http://localhost:8001/doc/1/term/note+project", {
+//   method: "GET",
+// }).then(response => response.json())
+//   .then(response => response)
+//   .catch(e => console.error("TODO handle error " + e));
 
-y.then(m => console.log(util.inspect(m, false, null, true)))
+// y.then(m => console.log(util.inspect(m, false, null, true)))
 
-let z = fetch("http://localhost:8000/all_doc_id", {
+let z = fetch("http://localhost:8001/term/research", {
   method: "GET",
 }).then(response => response.json())
   .then(response => response)

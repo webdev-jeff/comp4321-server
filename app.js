@@ -135,6 +135,31 @@ app.get("/all_keywords", (req, res) => {
   }
 })
 
+app.get("/term/:term", (req, res) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  let keyword = req.params.term;
+  try {
+    MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
+      if (err) return res.status(500).send([]);
+      var dbo = db.db("main_data");
+      dbo.collection("page_info").aggregate([
+        {"$project": {"keywords": 1}},
+        {"$unwind": "$keywords"},
+        {"$match": {"keywords.keyword": keyword}},
+        {"$project": {"_id": 1, "kw": "$keywords.keyword", "pos": "$keywords.pos"}},
+        {"$group": {"_id": "$kw", "pos": {"$push": {"doc_id": "$_id", "pos": "$pos"}}}}
+      ]).toArray(function(err, result) {
+          if (err) return res.status(500).send([]);
+          db.close();
+          return res.status(200).send(result);
+        }
+      );
+    });
+  } catch (e) {
+    return res.status(500).send([]);
+  }
+});
+
 // // query => documentID => documents
 // // TODO handle multiple words(phrase)
 // app.post("/v1/documents_query", async (req, res) => {
