@@ -35,6 +35,7 @@ app.get("/keyword/:kw", (req, res) => {
 });
 
 app.get("/all_doc", (req, res) => {
+  res.header('Access-Control-Allow-Origin', '*');
   try {
     MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
       if (err) return res.status(500).send([]);
@@ -52,6 +53,7 @@ app.get("/all_doc", (req, res) => {
 })
 
 app.get("/doc/:id", (req, res) => {
+  res.header('Access-Control-Allow-Origin', '*');
   let docId = req.params.id.split('+');
   try {
     MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
@@ -70,6 +72,7 @@ app.get("/doc/:id", (req, res) => {
 })
 
 app.get("/doc/:id/term/:term", (req, res) => {
+  res.header('Access-Control-Allow-Origin', '*');
   let docId = req.params.id;
   let terms = req.params.term.split('+');
   try {
