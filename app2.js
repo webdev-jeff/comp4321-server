@@ -36,6 +36,7 @@ app.get("/keyword/:kw", (req, res) => {
 });
 
 app.get("/all_doc", (req, res) => {
+  res.header('Access-Control-Allow-Origin', '*');
   try {
     MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
       if (err) return res.status(500).send([]);
