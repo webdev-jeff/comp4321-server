@@ -17,7 +17,7 @@ database_name = "main_data"
 
 
 def scanweb(w):
-    status, response = httplib2.Http().request(w)
+    status, response = httplib2.Http(".cache", disable_ssl_certificate_validation=True).request(w)
     soup = BeautifulSoup(response)
     nextlinks = []
     if soup.find('title') is None or len(soup.find('title')) == 0:
@@ -34,7 +34,7 @@ def scanweb(w):
                         'Z' else ' ' for k in pcontent])
     # print(pcontent)
     for a in soup.find_all('a', href=True):
-        if a['href'][:5] == 'http:':
+        if a['href'][:4]=='http':
             nextlinks += [a['href']]
         elif len(a['href']) != 0 and a['href'][0] == '/':
             nextlinks += ['/'.join(w.split('/')[:3])+a['href']]
@@ -72,17 +72,21 @@ def rescanweb(w, n=30, p=''):
     scanResult['_id'] = str(startid)
     db.page_info.insert_one(scanResult)
     startid += 1
-    if n > 1:
+    if n>1:
         s = db.page_info.find({"_id": str(startid-1)})
         for i in s:
             for j in i['next_links']:
-                if j[-1] == '/':
+                if db.page_info.find({"doc_url": j}).limit(1).count() == 0 and httplib2.Http(".cache", disable_ssl_certificate_validation=True).request(j)[0]['content-type'][:4]=='text':
                     if db.page_info.find({"doc_url": j}).limit(1).count() == 0:
-                        rescanweb(j, n-1)
-                    ts = db.page_info.find_one({"doc_url": j})
-                    db.page_info.remove({"doc_url": j})
-                    ts['parent_links'] += [p]
-                    db.page_info.insert_one(ts)
+                        try:
+                            rescanweb(j,n-1)
+                        except:
+                            print('can\'t load the page:',j)
+                        if db.page_info.find({"doc_url": j}).limit(1).count() != 0:
+                            ts = db.page_info.find_one({"doc_url": j })
+                            db.page_info.remove({"doc_url": j })
+                            ts['parent_links'] += [p]
+                            db.page_info.insert_one(ts)
 
 
 startid = 0
