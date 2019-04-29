@@ -96,7 +96,7 @@ def rescanweb(w, n=30, p=''):
 startid = 0
 mapFromUrlToId = {}
 UrlAdjacencyLists = {}
-rescanweb('http://www.cse.ust.hk/', 2)  # crawl for 3 layers
+rescanweb('http://www.cse.ust.hk/', 3)  # crawl for 3 layers
 for pageId in UrlAdjacencyLists.keys():
     for next_link in UrlAdjacencyLists[pageId]:
         try:
