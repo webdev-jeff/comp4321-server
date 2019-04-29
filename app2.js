@@ -4,6 +4,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const logger = require("morgan");
 const path = require("path");
+const fs = require('fs');
 
 const app = express();
 
@@ -35,7 +36,6 @@ app.get("/keyword/:kw", (req, res) => {
 });
 
 app.get("/all_doc", (req, res) => {
-  res.header('Access-Control-Allow-Origin', '*');
   try {
     MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
       if (err) return res.status(500).send([]);
@@ -53,7 +53,6 @@ app.get("/all_doc", (req, res) => {
 })
 
 app.get("/doc/:id", (req, res) => {
-  res.header('Access-Control-Allow-Origin', '*');
   let docId = req.params.id.split('+');
   try {
     MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
@@ -72,7 +71,6 @@ app.get("/doc/:id", (req, res) => {
 })
 
 app.get("/doc/:id/term/:term", (req, res) => {
-  res.header('Access-Control-Allow-Origin', '*');
   let docId = req.params.id;
   let terms = req.params.term.split('+');
   try {
@@ -158,6 +156,18 @@ app.get("/term/:term", (req, res) => {
         }
       );
     });
+  } catch (e) {
+    return res.status(500).send([]);
+  }
+});
+
+app.get('/page_rank', (req, res) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  try {
+    fs.readFile('./db/pagerank.json', (err, json) => {
+      let obj = JSON.parse(json);
+      res.status(200).json(obj);
+  });
   } catch (e) {
     return res.status(500).send([]);
   }

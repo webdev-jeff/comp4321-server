@@ -4,6 +4,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const logger = require("morgan");
 const path = require("path");
+const fs = require('fs');
 
 const app = express();
 
@@ -155,6 +156,18 @@ app.get("/term/:term", (req, res) => {
         }
       );
     });
+  } catch (e) {
+    return res.status(500).send([]);
+  }
+});
+
+app.get('/page_rank', (req, res) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  try {
+    fs.readFile('./db/pagerank.json', (err, json) => {
+      let obj = JSON.parse(json);
+      res.status(200).json(obj);
+  });
   } catch (e) {
     return res.status(500).send([]);
   }
