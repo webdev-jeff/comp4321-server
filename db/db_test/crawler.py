@@ -76,8 +76,12 @@ def rescanweb(w, n=30, p=''):
         s = db.page_info.find({"_id": str(startid-1)})
         for i in s:
             for j in i['next_links']:
-                if db.page_info.find({"doc_url": j}).limit(1).count() == 0 and httplib2.Http(".cache", disable_ssl_certificate_validation=True).request(j)[0]['content-type'][:4]=='text':
-                    if db.page_info.find({"doc_url": j}).limit(1).count() == 0:
+                if db.page_info.find({"doc_url": j}).limit(1).count() == 0:
+                    try:
+                        tempcontent = httplib2.Http(".cache", disable_ssl_certificate_validation=True).request(j)[0]['content-type'][:4]=='text'
+                    except:
+                        tempcontent = False
+                    if tempcontent and db.page_info.find({"doc_url": j}).limit(1).count() == 0:
                         try:
                             rescanweb(j,n-1)
                         except:
@@ -92,7 +96,7 @@ def rescanweb(w, n=30, p=''):
 startid = 0
 mapFromUrlToId = {}
 UrlAdjacencyLists = {}
-rescanweb('http://www.cse.ust.hk/', 3)  # crawl for 3 layers
+rescanweb('http://www.cse.ust.hk/', 2)  # crawl for 3 layers
 for pageId in UrlAdjacencyLists.keys():
     for next_link in UrlAdjacencyLists[pageId]:
         try:
