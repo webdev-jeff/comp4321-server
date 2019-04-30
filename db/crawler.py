@@ -76,7 +76,7 @@ def rescanweb(w, n=30, p=''):
         s = db.page_info.find({"_id": str(startid-1)})
         for i in s:
             for j in i['next_links']:
-                if db.page_info.find({"doc_url": j}).limit(1).count() == 0:
+                if '%' not in j and db.page_info.find({"doc_url": j}).limit(1).count() == 0:
                     try:
                         tempcontent = httplib2.Http(".cache", disable_ssl_certificate_validation=True).request(j)[0]['content-type'][:4]=='text'
                     except:
